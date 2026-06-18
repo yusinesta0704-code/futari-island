@@ -385,18 +385,6 @@ const db = getFirestore(app);
 let exp = Number(localStorage.getItem("exp")) || 0;
 let level = Number(localStorage.getItem("level")) || 1;
 
-async function testFirebase(){
-
-    const docRef = doc(db, "games", "main");
-    const docSnap = await getDoc(docRef);
-
-    if(docSnap.exists()){
-        alert("Firebase接続成功！");
-    }else{
-        alert("games/main が見つからない");
-    }
-
-}
 
 async function loadGame(){
 
@@ -751,7 +739,6 @@ updateScreen();
 showHistory();
 checkAchievements();
 showAchievements();
-testFirebase();
 loadGame();
 
 </script>
