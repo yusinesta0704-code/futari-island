@@ -397,6 +397,32 @@ async function testFirebase(){
 
 }
 
+async function loadGame(){
+
+    const docRef =
+    doc(db,"games","main");
+
+    const docSnap =
+    await getDoc(docRef);
+
+    if(docSnap.exists()){
+
+        const data =
+        docSnap.data();
+
+        exp = data.exp || 0;
+        level = data.level || 1;
+
+        updateScreen();
+
+        console.log(
+            "ゲーム読込成功"
+        );
+
+    }
+
+}
+
 function updateIsland(){
     const islandImage = document.getElementById("islandImage");
     islandImage.src = "images/island_lv" + level + ".png";
@@ -710,6 +736,7 @@ showHistory();
 checkAchievements();
 showAchievements();
 testFirebase();
+loadGame();
 
 </script>
 
