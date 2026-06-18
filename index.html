@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>よっちとゆーしの思い出島</title>
+
+<style>
+body{
+    margin:0;
+    font-family:"Yu Gothic",sans-serif;
+    background:linear-gradient(#9be7ff,#e9fbff);
+}
+
+.app{
+    max-width:430px;
+    margin:auto;
+    min-height:100vh;
+    padding:15px;
+    box-sizing:border-box;
+}
+
+h1{
+    text-align:center;
+    margin:10px 0 15px;
+    font-size:24px;
+}
+
+.island{
+    position:relative;
+    background:white;
+    border-radius:25px;
+    overflow:hidden;
+    box-shadow:0 5px 15px rgba(0,0,0,0.15);
+}
+
+.island-bg{
+    width:100%;
+    display:block;
+}
+
+.slime-img{
+    position:absolute;
+    width:100px;
+    left:50%;
+    bottom:60px;
+    transform:translateX(-50%);
+    z-index:10;
+}
+
+.island-bg{
+    width:100%;
+    display:block;
+}
+
+.slime-img{
+    position:absolute;
+
+    width:100px;
+
+    left:50%;
+    bottom:70px;
+
+    transform:translateX(-50%);
+
+    z-index:10;
+
+    animation: slimeBounce 4s ease-in-out infinite;
+    transform-origin: bottom center;
+}
+
+.status{
+    background:white;
+    margin-top:15px;
+    padding:15px;
+    border-radius:20px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.1);
+}
+
+.bar{
+    width:100%;
+    height:18px;
+    background:#eee;
+    border-radius:999px;
+    overflow:hidden;
+    margin-top:10px;
+}
+
+.bar-inner{
+    height:100%;
+    width:0%;
+    background:linear-gradient(90deg,#ff8fc7,#ffd86b);
+    transition:0.3s;
+}
+
+.buttons{
+    display:grid;
+    gap:10px;
+    margin-top:15px;
+}
+
+button{
+    border:none;
+    border-radius:15px;
+    padding:14px;
+    font-size:16px;
+    font-weight:bold;
+    background:white;
+    box-shadow:0 4px 10px rgba(0,0,0,0.12);
+    cursor:pointer;
+}
+
+button:active{
+    transform:scale(0.98);
+}
+
+.reset-button{
+    background:#f2f2f2;
+    font-size:14px;
+}
+
+.status-message{
+    margin-top:12px;
+    padding:8px 12px;
+    background:rgba(255,255,255,0.75);
+    border-radius:999px;
+    text-align:center;
+    font-size:13px;
+    color:#555;
+    box-shadow:0 2px 6px rgba(0,0,0,0.08);
+}
+
+
+@keyframes slimeBounce {
+
+    0% {
+        transform: translateX(-50%) scale(1,1);
+    }
+
+    20% {
+        transform: translateX(-50%) scale(1.08,0.92);
+    }
+
+    35% {
+        transform: translateX(-50%) scale(0.96,1.06);
+    }
+
+    50% {
+        transform: translateX(-50%) scale(1,1);
+    }
+
+    100% {
+        transform: translateX(-50%) scale(1,1);
+    }
+
+}
+
+.history{
+
+    margin-top:15px;
+
+    background:white;
+
+    border-radius:15px;
+
+    padding:12px;
+
+    box-shadow:0 4px 10px rgba(0,0,0,0.1);
+
+}
+
+.history h3{
+
+    margin-top:0;
+
+}
+
+button{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+}
+
+.btn-tag{
+    font-size:11px;
+    letter-spacing:1px;
+    padding:4px 8px;
+    border-radius:999px;
+    background:#ffe3f0;
+    color:#d85d91;
+}
+
+.achievements{
+    margin-top:15px;
+    background:white;
+    border-radius:15px;
+    padding:12px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.1);
+}
+
+.achievements h3{
+    margin-top:0;
+}
+
+.achievement-item{
+    margin-bottom:8px;
+    padding:8px 10px;
+    border-radius:12px;
+    background:#fff4d6;
+    font-size:14px;
+}
+
+.levelup-flash{
+    position:absolute;
+    inset:0;
+    background:white;
+    opacity:0;
+    z-index:30;
+    pointer-events:none;
+}
+
+.levelup-flash.active{
+    animation: levelupFlash 1.4s ease-in-out;
+}
+
+@keyframes levelupFlash{
+    0%{
+        opacity:0;
+    }
+
+    35%{
+        opacity:1;
+    }
+
+    65%{
+        opacity:1;
+    }
+
+    100%{
+        opacity:0;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+    <h1>よっちとゆーしの思い出島</h1>
+
+    <div class="island">
+
+    <img
+        id="islandImage"
+        class="island-bg"
+        src="images/island_lv1_a.png">
+
+<div class="levelup-flash" id="levelupFlash"></div>
+
+    <img
+        id="slimeImage"
+        class="slime-img"
+        src="images/slime_lv1.png">
+
+<div class="levelup-flash" id="levelupFlash"></div>
+
+   </div>
+
+    <div class="status">
+        <div>島レベル：<span id="level">1</span></div>
+
+        <div style="margin-top:8px;">
+            思い出EXP：<span id="exp">0</span> / 100
+        </div>
+
+        <div class="bar">
+            <div class="bar-inner" id="bar"></div>
+        </div>
+    </div>
+
+   <div class="buttons">
+
+    <button onclick="addExp(10,'通話した')">
+        <span class="btn-tag">CALL</span>
+        <span>通話</span>
+    </button>
+
+    <button onclick="addExp(25,'デートした')">
+        <span class="btn-tag">DATE</span>
+        <span>デート</span>
+    </button>
+
+    <button onclick="addExp(40,'記念日を過ごした')">
+        <span class="btn-tag">ANNIV</span>
+        <span>記念日</span>
+    </button>
+
+    <button onclick="addExp(50,'旅行した')">
+        <span class="btn-tag">TRIP</span>
+        <span>旅行</span>
+    </button>
+
+    <button onclick="addExp(45,'温泉に行った')">
+        <span class="btn-tag">SPA</span>
+        <span>温泉</span>
+    </button>
+
+    <button onclick="addCustomMemory()">
+        <span class="btn-tag">PLUS</span>
+        <span>自由入力</span>
+    </button>
+
+<button class="reset-button" onclick="undoLast()">
+    <span class="btn-tag">UNDO</span>
+    <span>1つ戻る</span>
+</button>
+
+    <button class="reset-button" onclick="resetData()">
+        <span class="btn-tag">RESET</span>
+        <span>リセット</span>
+    </button>
+
+<button class="reset-button" onclick="exportBackup()">
+    <span class="btn-tag">SAVE</span>
+    <span>バックアップ</span>
+</button>
+
+<button class="reset-button" onclick="importBackup()">
+    <span class="btn-tag">LOAD</span>
+    <span>復元</span>
+</button>
+
+</div>
+
+<div class="status-message" id="log">
+    今日はどんな思い出を増やす？
+</div>
+
+<div class="history">
+
+    <h3>思い出履歴</h3>
+
+    <div id="historyList">
+        まだ思い出がありません
+    </div>
+
+</div>
+
+<div class="achievements">
+
+    <h3>実績</h3>
+
+    <div id="achievementList">
+        まだ実績がありません
+    </div>
+
+</div>
+
+<script>
+
+let exp = Number(localStorage.getItem("exp")) || 0;
+let level = Number(localStorage.getItem("level")) || 1;
+
+function updateIsland(){
+
+    const islandImage =
+    document.getElementById("islandImage");
+
+    islandImage.src =
+    "images/island_lv" + level + ".png";
+
+}
+
+function updateScreen(){
+
+    document.getElementById("level").textContent =
+    level;
+
+    document.getElementById("exp").textContent =
+    exp;
+
+    document.getElementById("bar").style.width =
+    exp + "%";
+
+    document.getElementById("slimeImage").src =
+    "images/slime_lv" + level + ".png";
+
+    updateIsland();
+
+}
+
+function saveUndoState(){
+
+    const undoData = {
+        exp: exp,
+        level: level,
+        history:
+            JSON.parse(localStorage.getItem("history")) || [],
+        achievements:
+            JSON.parse(localStorage.getItem("achievements")) || []
+    };
+
+    localStorage.setItem(
+        "undoData",
+        JSON.stringify(undoData)
+    );
+
+}
+
+function undoLast(){
+
+    const undoData =
+    JSON.parse(localStorage.getItem("undoData"));
+
+    if(!undoData){
+
+        alert("戻せる操作がありません");
+
+        return;
+
+    }
+
+    exp = undoData.exp;
+    level = undoData.level;
+
+    localStorage.setItem("exp",exp);
+    localStorage.setItem("level",level);
+    localStorage.setItem(
+        "history",
+        JSON.stringify(undoData.history)
+    );
+    localStorage.setItem(
+        "achievements",
+        JSON.stringify(undoData.achievements)
+    );
+
+    localStorage.removeItem("undoData");
+
+    document.getElementById("log").textContent =
+    "1つ前に戻したよ！";
+
+    showHistory();
+    showAchievements();
+    updateScreen();
+
+}
+
+function addExp(amount,message){
+
+    saveUndoState();
+
+    exp += amount;
+
+    if(exp >= 100){
+
+        exp -= 100;
+
+        localStorage.setItem("exp",exp);
+
+        document.getElementById("log").textContent =
+        "レベルアップ！";
+
+        playLevelUpEffect(function(){
+
+            level++;
+
+            if(level > 5){
+                level = 5;
+                exp = 100;
+            }
+
+            localStorage.setItem("level",level);
+            localStorage.setItem("exp",exp);
+
+            document.getElementById("log").textContent =
+            "島が発展したよ！";
+
+            addHistory("レベルアップ：" + level);
+            checkAchievements();
+            updateScreen();
+
+        });
+
+        updateScreen();
+
+        return;
+
+    }
+
+    localStorage.setItem("exp",exp);
+    localStorage.setItem("level",level);
+
+    document.getElementById("log").textContent =
+    message;
+
+    addHistory(message);
+    checkAchievements();
+    updateScreen();
+
+}
+
+function playLevelUpEffect(afterFlash){
+
+    const flash =
+    document.getElementById("levelupFlash");
+
+    flash.classList.remove("active");
+
+    void flash.offsetWidth;
+
+    flash.classList.add("active");
+
+    setTimeout(function(){
+
+        afterFlash();
+
+    }, 500);
+
+}
+
+function addHistory(message){
+
+    let history =
+    JSON.parse(localStorage.getItem("history")) || [];
+
+    const today = new Date();
+
+    const dateText =
+        today.getFullYear() + "/" +
+        (today.getMonth() + 1) + "/" +
+        today.getDate();
+
+    history.unshift({
+        date: dateText,
+        text: message
+    });
+
+    localStorage.setItem(
+        "history",
+        JSON.stringify(history)
+    );
+
+    showHistory();
+
+}
+
+function showHistory(){
+
+    const historyList =
+    document.getElementById("historyList");
+
+    const history =
+    JSON.parse(localStorage.getItem("history")) || [];
+
+    if(history.length === 0){
+
+        historyList.textContent =
+        "まだ思い出がありません";
+
+        return;
+
+    }
+
+    historyList.innerHTML = "";
+
+    history.forEach(item => {
+
+        const div =
+        document.createElement("div");
+
+        div.style.marginBottom = "8px";
+
+        div.textContent =
+        item.date + "　" + item.text;
+
+        historyList.appendChild(div);
+
+    });
+
+}
+
+function checkAchievements(){
+
+    const history =
+    JSON.parse(localStorage.getItem("history")) || [];
+
+    let achievements =
+    JSON.parse(localStorage.getItem("achievements")) || [];
+
+    function unlock(id,name){
+
+        if(!achievements.some(a => a.id === id)){
+
+            achievements.push({
+                id:id,
+                name:name
+            });
+
+            document.getElementById("log").textContent =
+            "実績解除：" + name;
+
+        }
+
+    }
+
+    if(history.some(h => h.text.includes("通話"))){
+        unlock("first_call","初通話");
+    }
+
+    if(history.some(h => h.text.includes("デート"))){
+        unlock("first_date","初デート");
+    }
+
+    if(history.some(h => h.text.includes("旅行"))){
+        unlock("first_trip","初旅行");
+    }
+
+    if(history.some(h => h.text.includes("温泉"))){
+        unlock("first_spa","初温泉");
+    }
+
+    if(history.length >= 10){
+        unlock("memory_10","思い出10件");
+    }
+
+    localStorage.setItem(
+        "achievements",
+        JSON.stringify(achievements)
+    );
+
+    showAchievements();
+
+}
+
+function showAchievements(){
+
+    const achievementList =
+    document.getElementById("achievementList");
+
+    const achievements =
+    JSON.parse(localStorage.getItem("achievements")) || [];
+
+    if(achievements.length === 0){
+
+        achievementList.textContent =
+        "まだ実績がありません";
+
+        return;
+
+    }
+
+    achievementList.innerHTML = "";
+
+    achievements.forEach(item => {
+
+        const div =
+        document.createElement("div");
+
+        div.className =
+        "achievement-item";
+
+        div.textContent =
+        item.name;
+
+        achievementList.appendChild(div);
+
+    });
+
+}
+
+function addCustomMemory(){
+
+    const title =
+    prompt("思い出内容を入力してね");
+
+    if(!title) return;
+
+    const expValue =
+    prompt("EXPを入力してね");
+
+    if(!expValue) return;
+
+    const expNum =
+    Number(expValue);
+
+    if(isNaN(expNum)){
+
+        alert("数字を入力してね");
+
+        return;
+
+    }
+
+    addExp(
+        expNum,
+        "自由入力：" + title
+    );
+
+}
+
+function exportBackup(){
+
+    const backupData = {
+        exp: exp,
+        level: level,
+        history: JSON.parse(localStorage.getItem("history")) || [],
+        achievements: JSON.parse(localStorage.getItem("achievements")) || []
+    };
+
+    const text =
+    JSON.stringify(backupData);
+
+    prompt(
+        "この文字をコピーして保存してね",
+        text
+    );
+
+}
+
+function importBackup(){
+
+    const text =
+    prompt("バックアップ文字を貼り付けてね");
+
+    if(!text) return;
+
+    try{
+
+        const data =
+        JSON.parse(text);
+
+        if(
+            data.exp === undefined ||
+            data.level === undefined ||
+            !Array.isArray(data.history) ||
+            !Array.isArray(data.achievements)
+        ){
+            alert("バックアップ形式が違うみたいです");
+            return;
+        }
+
+        saveUndoState();
+
+        exp = Number(data.exp);
+        level = Number(data.level);
+
+        localStorage.setItem("exp",exp);
+        localStorage.setItem("level",level);
+        localStorage.setItem(
+            "history",
+            JSON.stringify(data.history)
+        );
+        localStorage.setItem(
+            "achievements",
+            JSON.stringify(data.achievements)
+        );
+
+        document.getElementById("log").textContent =
+        "バックアップを復元したよ！";
+
+        showHistory();
+        showAchievements();
+        updateScreen();
+
+    }catch(e){
+
+        alert("読み込みに失敗しました");
+
+    }
+
+}
+
+function resetData(){
+
+    if(!confirm("本当にリセットしますか？")){
+        return;
+    }
+
+    saveUndoState();
+
+    localStorage.removeItem("exp");
+    localStorage.removeItem("level");
+    localStorage.removeItem("history");
+    localStorage.removeItem("achievements");
+
+    exp = 0;
+    level = 1;
+
+    document.getElementById("log").textContent =
+    "データをリセットしたよ！";
+
+    showHistory();
+    showAchievements();
+    updateScreen();
+
+}
+
+updateScreen();
+showHistory();
+checkAchievements();
+showAchievements();
+
+</script>
+
+</body>
+</html>
