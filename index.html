@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
@@ -359,112 +359,109 @@ button{
 
 </div>
 
-<script>
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+
+import {
+    getFirestore,
+    doc,
+    getDoc
+} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyD1EAezLRPu5I2GDI3QMZpuJuuQ4A0HRLs",
+    authDomain: "futari-island.firebaseapp.com",
+    projectId: "futari-island",
+    storageBucket: "futari-island.firebasestorage.app",
+    messagingSenderId: "585604381998",
+    appId: "1:585604381998:web:1e8ee939a19cb816174ebf"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
 let exp = Number(localStorage.getItem("exp")) || 0;
 let level = Number(localStorage.getItem("level")) || 1;
 
-function updateIsland(){
+async function testFirebase(){
 
-    const islandImage =
-    document.getElementById("islandImage");
+    const docRef = doc(db, "games", "main");
+    const docSnap = await getDoc(docRef);
 
-    islandImage.src =
-    "images/island_lv" + level + ".png";
+    if(docSnap.exists()){
+        alert("Firebase接続成功！");
+    }else{
+        alert("games/main が見つからない");
+    }
 
 }
 
+function updateIsland(){
+    const islandImage = document.getElementById("islandImage");
+    islandImage.src = "images/island_lv" + level + ".png";
+}
+
 function updateScreen(){
-
-    document.getElementById("level").textContent =
-    level;
-
-    document.getElementById("exp").textContent =
-    exp;
-
-    document.getElementById("bar").style.width =
-    exp + "%";
+    document.getElementById("level").textContent = level;
+    document.getElementById("exp").textContent = exp;
+    document.getElementById("bar").style.width = exp + "%";
 
     document.getElementById("slimeImage").src =
     "images/slime_lv" + level + ".png";
 
     updateIsland();
-
 }
 
 function saveUndoState(){
-
     const undoData = {
         exp: exp,
         level: level,
-        history:
-            JSON.parse(localStorage.getItem("history")) || [],
-        achievements:
-            JSON.parse(localStorage.getItem("achievements")) || []
+        history: JSON.parse(localStorage.getItem("history")) || [],
+        achievements: JSON.parse(localStorage.getItem("achievements")) || []
     };
 
-    localStorage.setItem(
-        "undoData",
-        JSON.stringify(undoData)
-    );
-
+    localStorage.setItem("undoData", JSON.stringify(undoData));
 }
 
 function undoLast(){
-
-    const undoData =
-    JSON.parse(localStorage.getItem("undoData"));
+    const undoData = JSON.parse(localStorage.getItem("undoData"));
 
     if(!undoData){
-
         alert("戻せる操作がありません");
-
         return;
-
     }
 
     exp = undoData.exp;
     level = undoData.level;
 
-    localStorage.setItem("exp",exp);
-    localStorage.setItem("level",level);
-    localStorage.setItem(
-        "history",
-        JSON.stringify(undoData.history)
-    );
-    localStorage.setItem(
-        "achievements",
-        JSON.stringify(undoData.achievements)
-    );
+    localStorage.setItem("exp", exp);
+    localStorage.setItem("level", level);
+    localStorage.setItem("history", JSON.stringify(undoData.history));
+    localStorage.setItem("achievements", JSON.stringify(undoData.achievements));
 
     localStorage.removeItem("undoData");
 
-    document.getElementById("log").textContent =
-    "1つ前に戻したよ！";
+    document.getElementById("log").textContent = "1つ前に戻したよ！";
 
     showHistory();
     showAchievements();
     updateScreen();
-
 }
 
 function addExp(amount,message){
-
     saveUndoState();
 
     exp += amount;
 
     if(exp >= 100){
-
         exp -= 100;
 
-        localStorage.setItem("exp",exp);
+        localStorage.setItem("exp", exp);
 
-        document.getElementById("log").textContent =
-        "レベルアップ！";
+        document.getElementById("log").textContent = "レベルアップ！";
 
         playLevelUpEffect(function(){
-
             level++;
 
             if(level > 5){
@@ -472,62 +469,46 @@ function addExp(amount,message){
                 exp = 100;
             }
 
-            localStorage.setItem("level",level);
-            localStorage.setItem("exp",exp);
+            localStorage.setItem("level", level);
+            localStorage.setItem("exp", exp);
 
-            document.getElementById("log").textContent =
-            "島が発展したよ！";
+            document.getElementById("log").textContent = "島が発展したよ！";
 
             addHistory("レベルアップ：" + level);
             checkAchievements();
             updateScreen();
-
         });
 
         updateScreen();
-
         return;
-
     }
 
-    localStorage.setItem("exp",exp);
-    localStorage.setItem("level",level);
+    localStorage.setItem("exp", exp);
+    localStorage.setItem("level", level);
 
-    document.getElementById("log").textContent =
-    message;
+    document.getElementById("log").textContent = message;
 
     addHistory(message);
     checkAchievements();
     updateScreen();
-
 }
 
 function playLevelUpEffect(afterFlash){
-
-    const flash =
-    document.getElementById("levelupFlash");
+    const flash = document.getElementById("levelupFlash");
 
     flash.classList.remove("active");
-
     void flash.offsetWidth;
-
     flash.classList.add("active");
 
     setTimeout(function(){
-
         afterFlash();
-
     }, 500);
-
 }
 
 function addHistory(message){
-
-    let history =
-    JSON.parse(localStorage.getItem("history")) || [];
+    let history = JSON.parse(localStorage.getItem("history")) || [];
 
     const today = new Date();
-
     const dateText =
         today.getFullYear() + "/" +
         (today.getMonth() + 1) + "/" +
@@ -538,62 +519,36 @@ function addHistory(message){
         text: message
     });
 
-    localStorage.setItem(
-        "history",
-        JSON.stringify(history)
-    );
+    localStorage.setItem("history", JSON.stringify(history));
 
     showHistory();
-
 }
 
 function showHistory(){
-
-    const historyList =
-    document.getElementById("historyList");
-
-    const history =
-    JSON.parse(localStorage.getItem("history")) || [];
+    const historyList = document.getElementById("historyList");
+    const history = JSON.parse(localStorage.getItem("history")) || [];
 
     if(history.length === 0){
-
-        historyList.textContent =
-        "まだ思い出がありません";
-
+        historyList.textContent = "まだ思い出がありません";
         return;
-
     }
 
     historyList.innerHTML = "";
 
     history.forEach(item => {
-
-        const div =
-        document.createElement("div");
-
+        const div = document.createElement("div");
         div.style.marginBottom = "8px";
-
-        div.textContent =
-        item.date + "　" + item.text;
-
+        div.textContent = item.date + "　" + item.text;
         historyList.appendChild(div);
-
     });
-
 }
 
 function checkAchievements(){
-
-    const history =
-    JSON.parse(localStorage.getItem("history")) || [];
-
-    let achievements =
-    JSON.parse(localStorage.getItem("achievements")) || [];
+    const history = JSON.parse(localStorage.getItem("history")) || [];
+    let achievements = JSON.parse(localStorage.getItem("achievements")) || [];
 
     function unlock(id,name){
-
         if(!achievements.some(a => a.id === id)){
-
             achievements.push({
                 id:id,
                 name:name
@@ -601,9 +556,7 @@ function checkAchievements(){
 
             document.getElementById("log").textContent =
             "実績解除：" + name;
-
         }
-
     }
 
     if(history.some(h => h.text.includes("通話"))){
@@ -626,83 +579,50 @@ function checkAchievements(){
         unlock("memory_10","思い出10件");
     }
 
-    localStorage.setItem(
-        "achievements",
-        JSON.stringify(achievements)
-    );
+    localStorage.setItem("achievements", JSON.stringify(achievements));
 
     showAchievements();
-
 }
 
 function showAchievements(){
-
-    const achievementList =
-    document.getElementById("achievementList");
-
-    const achievements =
-    JSON.parse(localStorage.getItem("achievements")) || [];
+    const achievementList = document.getElementById("achievementList");
+    const achievements = JSON.parse(localStorage.getItem("achievements")) || [];
 
     if(achievements.length === 0){
-
-        achievementList.textContent =
-        "まだ実績がありません";
-
+        achievementList.textContent = "まだ実績がありません";
         return;
-
     }
 
     achievementList.innerHTML = "";
 
     achievements.forEach(item => {
-
-        const div =
-        document.createElement("div");
-
-        div.className =
-        "achievement-item";
-
-        div.textContent =
-        item.name;
-
+        const div = document.createElement("div");
+        div.className = "achievement-item";
+        div.textContent = item.name;
         achievementList.appendChild(div);
-
     });
-
 }
 
 function addCustomMemory(){
-
-    const title =
-    prompt("思い出内容を入力してね");
+    const title = prompt("思い出内容を入力してね");
 
     if(!title) return;
 
-    const expValue =
-    prompt("EXPを入力してね");
+    const expValue = prompt("EXPを入力してね");
 
     if(!expValue) return;
 
-    const expNum =
-    Number(expValue);
+    const expNum = Number(expValue);
 
     if(isNaN(expNum)){
-
         alert("数字を入力してね");
-
         return;
-
     }
 
-    addExp(
-        expNum,
-        "自由入力：" + title
-    );
-
+    addExp(expNum, "自由入力：" + title);
 }
 
 function exportBackup(){
-
     const backupData = {
         exp: exp,
         level: level,
@@ -710,27 +630,18 @@ function exportBackup(){
         achievements: JSON.parse(localStorage.getItem("achievements")) || []
     };
 
-    const text =
-    JSON.stringify(backupData);
+    const text = JSON.stringify(backupData);
 
-    prompt(
-        "この文字をコピーして保存してね",
-        text
-    );
-
+    prompt("この文字をコピーして保存してね", text);
 }
 
 function importBackup(){
-
-    const text =
-    prompt("バックアップ文字を貼り付けてね");
+    const text = prompt("バックアップ文字を貼り付けてね");
 
     if(!text) return;
 
     try{
-
-        const data =
-        JSON.parse(text);
+        const data = JSON.parse(text);
 
         if(
             data.exp === undefined ||
@@ -747,16 +658,10 @@ function importBackup(){
         exp = Number(data.exp);
         level = Number(data.level);
 
-        localStorage.setItem("exp",exp);
-        localStorage.setItem("level",level);
-        localStorage.setItem(
-            "history",
-            JSON.stringify(data.history)
-        );
-        localStorage.setItem(
-            "achievements",
-            JSON.stringify(data.achievements)
-        );
+        localStorage.setItem("exp", exp);
+        localStorage.setItem("level", level);
+        localStorage.setItem("history", JSON.stringify(data.history));
+        localStorage.setItem("achievements", JSON.stringify(data.achievements));
 
         document.getElementById("log").textContent =
         "バックアップを復元したよ！";
@@ -766,15 +671,11 @@ function importBackup(){
         updateScreen();
 
     }catch(e){
-
         alert("読み込みに失敗しました");
-
     }
-
 }
 
 function resetData(){
-
     if(!confirm("本当にリセットしますか？")){
         return;
     }
@@ -795,13 +696,20 @@ function resetData(){
     showHistory();
     showAchievements();
     updateScreen();
-
 }
+
+window.addExp = addExp;
+window.addCustomMemory = addCustomMemory;
+window.undoLast = undoLast;
+window.exportBackup = exportBackup;
+window.importBackup = importBackup;
+window.resetData = resetData;
 
 updateScreen();
 showHistory();
 checkAchievements();
 showAchievements();
+testFirebase();
 
 </script>
 
