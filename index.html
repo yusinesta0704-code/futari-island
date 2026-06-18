@@ -366,7 +366,8 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebas
 import {
     getFirestore,
     doc,
-    getDoc
+    getDoc,
+    setDoc
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -423,6 +424,20 @@ async function loadGame(){
 
 }
 
+async function saveGame(){
+
+    await setDoc(
+        doc(db,"games","main"),
+        {
+            exp: exp,
+            level: level
+        }
+    );
+
+    console.log("保存成功");
+
+}
+
 function updateIsland(){
     const islandImage = document.getElementById("islandImage");
     islandImage.src = "images/island_lv" + level + ".png";
@@ -463,6 +478,7 @@ function undoLast(){
 
     localStorage.setItem("exp", exp);
     localStorage.setItem("level", level);
+    saveGame();
     localStorage.setItem("history", JSON.stringify(undoData.history));
     localStorage.setItem("achievements", JSON.stringify(undoData.achievements));
 
