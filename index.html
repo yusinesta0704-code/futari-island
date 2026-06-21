@@ -397,8 +397,19 @@ async function loadGame(){
 
         localStorage.setItem("exp", exp);
         localStorage.setItem("level", level);
+        localStorage.setItem(
+            "history",
+            JSON.stringify(data.history || [])
+        );
+        localStorage.setItem(
+            "achievements",
+            JSON.stringify(data.achievements || [])
+        );
 
         updateScreen();
+        showHistory();
+        showAchievements();
+
         console.log("ゲーム読込成功");
     }
 }
@@ -408,7 +419,9 @@ async function saveGame(){
         doc(db,"games","main"),
         {
             exp: exp,
-            level: level
+            level: level,
+            history: JSON.parse(localStorage.getItem("history")) || [],
+            achievements: JSON.parse(localStorage.getItem("achievements")) || []
         },
         { merge:true }
     );
@@ -546,6 +559,8 @@ function addHistory(message){
     });
 
     localStorage.setItem("history", JSON.stringify(history));
+
+    saveGame();
 
     showHistory();
 }
