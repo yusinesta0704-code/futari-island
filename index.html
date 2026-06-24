@@ -1,4 +1,4 @@
-﻿﻿<!DOCTYPE html>
+﻿﻿﻿<!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
@@ -6,6 +6,32 @@
 <title>よっちとゆーしの思い出島</title>
 
 <style>
+
+.poop-area{
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    z-index:15;
+}
+
+.poop{
+    position:absolute;
+    width:28px;
+    height:28px;
+    animation: poopPop 0.25s ease;
+}
+
+@keyframes poopPop{
+    0%{
+        transform:scale(0);
+    }
+
+    100%{
+        transform:scale(1);
+    }
+}
+
+
 body{
     margin:0;
     font-family:"Yu Gothic",sans-serif;
@@ -242,6 +268,46 @@ button{
     }
 }
 
+.poop-area{
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    z-index:15;
+}
+
+.poop{
+    position:absolute;
+    width:28px;
+    height:28px;
+    animation: poopPop 0.25s ease;
+}
+
+@keyframes poopPop{
+    0%{
+        transform:scale(0);
+    }
+
+    100%{
+        transform:scale(1);
+    }
+}
+
+.care-effect{
+    position:absolute;
+    left:50%;
+    bottom:125px;
+    transform:translateX(-50%);
+    z-index:25;
+    font-size:14px;
+    font-weight:bold;
+    color:#555;
+    background:rgba(255,255,255,0.85);
+    padding:6px 12px;
+    border-radius:999px;
+    opacity:0;
+    pointer-events:none;
+}
+
 </style>
 </head>
 
@@ -251,23 +317,28 @@ button{
 
     <h1>よっちとゆーしの思い出島</h1>
 
-    <div class="island">
+   <div class="island">
 
     <img
         id="islandImage"
         class="island-bg"
-        src="images/island_lv1_a.png">
-
-<div class="levelup-flash" id="levelupFlash"></div>
+        src="images/island_lv1.png">
 
     <img
         id="slimeImage"
         class="slime-img"
         src="images/slime_lv1.png">
 
-<div class="levelup-flash" id="levelupFlash"></div>
+    <!-- うんち表示 -->
+    <div id="poopArea" class="poop-area"></div>
 
-   </div>
+    <!-- ごはん・掃除エフェクト -->
+    <div id="careEffect" class="care-effect"></div>
+
+    <!-- レベルアップの光 -->
+    <div class="levelup-flash" id="levelupFlash"></div>
+
+</div>
 
     <div class="status">
         <div>島レベル：<span id="level">1</span></div>
@@ -282,6 +353,16 @@ button{
     </div>
 
    <div class="buttons">
+
+   <button onclick="feedSlime()">
+       <span class="btn-tag">FOOD</span>
+       <span>ごはん</span>
+   </button>
+
+   <button onclick="cleanPoop()">
+       <span class="btn-tag">CLEAN</span>
+       <span>掃除</span>
+   </button>
 
     <button onclick="addExp(10,'通話した')">
         <span class="btn-tag">CALL</span>
@@ -383,6 +464,7 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 let exp = Number(localStorage.getItem("exp")) || 0;
+let poopCount = 3;
 let level = Number(localStorage.getItem("level")) || 1;
 
 async function loadGame(){
@@ -429,20 +511,31 @@ async function saveGame(){
     console.log("保存成功");
 }
 
+function updateScreen(){
+    updateStatus();
+    updateIsland();
+    updateSlime();
+    updatePoop();
+}
+
+function updateStatus(){
+    document.getElementById("level").textContent = level;
+    document.getElementById("exp").textContent = exp;
+    document.getElementById("bar").style.width = exp + "%";
+}
+
 function updateIsland(){
     const islandImage = document.getElementById("islandImage");
     islandImage.src = "images/island_lv" + level + ".png";
 }
 
-function updateScreen(){
-    document.getElementById("level").textContent = level;
-    document.getElementById("exp").textContent = exp;
-    document.getElementById("bar").style.width = exp + "%";
+function updateSlime(){
+    const slimeImage = document.getElementById("slimeImage");
+    slimeImage.src = "images/slime_lv" + level + ".png";
+}
 
-    document.getElementById("slimeImage").src =
-    "images/slime_lv" + level + ".png";
-
-    updateIsland();
+function updatePoop(){
+    showPoop();
 }
 
 function saveUndoState(){
@@ -642,6 +735,44 @@ function showAchievements(){
         div.textContent = item.name;
         achievementList.appendChild(div);
     });
+}
+
+function showPoop(){
+
+    const poopArea =
+    document.getElementById("poopArea");
+
+    poopArea.innerHTML = "";
+
+    const positions = [
+
+        {left:45, top:70},
+
+        {left:58, top:63},
+
+        {left:38, top:60}
+
+    ];
+
+    for(let i=0;i<poopCount;i++){
+
+        const img =
+        document.createElement("img");
+
+        img.src="images/poop.png";
+
+        img.className="poop";
+
+        img.style.left =
+        positions[i].left + "%";
+
+        img.style.top =
+        positions[i].top + "%";
+
+        poopArea.appendChild(img);
+
+    }
+
 }
 
 function addCustomMemory(){
