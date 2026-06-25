@@ -490,7 +490,9 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 let exp = Number(localStorage.getItem("exp")) || 0;
-let poopCount = 3;
+let poopCount = 0;
+let lastFeedTime = Number(localStorage.getItem("lastFeedTime")) || 0;
+let nextPoopTime = Number(localStorage.getItem("nextPoopTime")) || 0;
 let level = Number(localStorage.getItem("level")) || 1;
 
 async function loadGame(){
@@ -538,6 +540,7 @@ async function saveGame(){
 }
 
 function updateScreen(){
+    checkPoopTimer();
     updateStatus();
     updateIsland();
     updateSlime();
@@ -821,6 +824,22 @@ function addCustomMemory(){
 }
 
 function feedSlime(){
+    const now = Date.now();
+
+    if(lastFeedTime && now - lastFeedTime < 60 * 60 * 1000){
+        document.getElementById("log").textContent =
+        "スライムはおなかいっぱい！";
+
+        showCareEffect("おなかいっぱい");
+        return;
+    }
+
+    lastFeedTime = now;
+    nextPoopTime = now + 30 * 60 * 1000;
+
+    localStorage.setItem("lastFeedTime", lastFeedTime);
+    localStorage.setItem("nextPoopTime", nextPoopTime);
+
     document.getElementById("log").textContent =
     "スライムはごはんを食べた！";
 
@@ -859,6 +878,24 @@ function showCareEffect(text){
     void effect.offsetWidth;
 
     effect.classList.add("active");
+}
+
+function checkPoopTimer(){
+    const now = Date.now();
+
+    if(nextPoopTime && now >= nextPoopTime){
+        if(poopCount < 3){
+            poopCount++;
+        }
+
+        nextPoopTime = 0;
+
+        localStorage.setItem("poopCount", poopCount);
+        localStorage.setItem("nextPoopTime", nextPoopTime);
+
+        document.getElementById("log").textContent =
+        "スライムがうんちをしたみたい";
+    }
 }
 
 function exportBackup(){
