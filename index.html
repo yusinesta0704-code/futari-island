@@ -308,6 +308,32 @@ button{
     pointer-events:none;
 }
 
+.care-effect.active{
+    animation: careEffect 1.2s ease;
+}
+
+@keyframes careEffect{
+    0%{
+        opacity:0;
+        transform:translateX(-50%) translateY(10px);
+    }
+
+    25%{
+        opacity:1;
+        transform:translateX(-50%) translateY(0);
+    }
+
+    75%{
+        opacity:1;
+        transform:translateX(-50%) translateY(0);
+    }
+
+    100%{
+        opacity:0;
+        transform:translateX(-50%) translateY(-10px);
+    }
+}
+
 </style>
 </head>
 
@@ -794,6 +820,47 @@ function addCustomMemory(){
     addExp(expNum, "自由入力：" + title);
 }
 
+function feedSlime(){
+    document.getElementById("log").textContent =
+    "スライムはごはんを食べた！";
+
+    showCareEffect("もぐもぐ");
+
+    addExp(2, "ごはんをあげた");
+}
+
+function cleanPoop(){
+    if(poopCount === 0){
+        document.getElementById("log").textContent =
+        "掃除するものはないみたい";
+        return;
+    }
+
+    poopCount = 0;
+
+    document.getElementById("log").textContent =
+    "スライムのまわりを掃除した！";
+
+    showCareEffect("キラキラ");
+
+    addExp(2, "掃除した");
+
+    updateScreen();
+}
+
+function showCareEffect(text){
+    const effect =
+    document.getElementById("careEffect");
+
+    effect.textContent = text;
+
+    effect.classList.remove("active");
+
+    void effect.offsetWidth;
+
+    effect.classList.add("active");
+}
+
 function exportBackup(){
     const backupData = {
         exp: exp,
@@ -880,6 +947,8 @@ window.undoLast = undoLast;
 window.exportBackup = exportBackup;
 window.importBackup = importBackup;
 window.resetData = resetData;
+window.feedSlime = feedSlime;
+window.cleanPoop = cleanPoop;
 
 updateScreen();
 showHistory();
