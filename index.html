@@ -504,17 +504,17 @@ async function loadGame(){
 
         exp = data.exp || 0;
         level = data.level || 1;
+        poopCount = data.poopCount || 0;
+        lastFeedTime = data.lastFeedTime || 0;
+        nextPoopTime = data.nextPoopTime || 0;
 
         localStorage.setItem("exp", exp);
         localStorage.setItem("level", level);
-        localStorage.setItem(
-            "history",
-            JSON.stringify(data.history || [])
-        );
-        localStorage.setItem(
-            "achievements",
-            JSON.stringify(data.achievements || [])
-        );
+        localStorage.setItem("poopCount", poopCount);
+        localStorage.setItem("lastFeedTime", lastFeedTime);
+        localStorage.setItem("nextPoopTime", nextPoopTime);
+        localStorage.setItem("history", JSON.stringify(data.history || []));
+        localStorage.setItem("achievements", JSON.stringify(data.achievements || []));
 
         updateScreen();
         showHistory();
@@ -530,6 +530,9 @@ async function saveGame(){
         {
             exp: exp,
             level: level,
+            poopCount: poopCount,
+            lastFeedTime: lastFeedTime,
+            nextPoopTime: nextPoopTime,
             history: JSON.parse(localStorage.getItem("history")) || [],
             achievements: JSON.parse(localStorage.getItem("achievements")) || []
         },
@@ -839,6 +842,7 @@ function feedSlime(){
 
     localStorage.setItem("lastFeedTime", lastFeedTime);
     localStorage.setItem("nextPoopTime", nextPoopTime);
+    saveGame();
 
     document.getElementById("log").textContent =
     "スライムはごはんを食べた！";
@@ -856,6 +860,8 @@ function cleanPoop(){
     }
 
     poopCount = 0;
+localStorage.setItem("poopCount", poopCount);
+saveGame();
 
     document.getElementById("log").textContent =
     "スライムのまわりを掃除した！";
@@ -892,6 +898,7 @@ function checkPoopTimer(){
 
         localStorage.setItem("poopCount", poopCount);
         localStorage.setItem("nextPoopTime", nextPoopTime);
+        saveGame();
 
         document.getElementById("log").textContent =
         "スライムがうんちをしたみたい";
