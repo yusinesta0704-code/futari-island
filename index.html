@@ -577,14 +577,22 @@ function updatePoop(){
 }
 
 function saveUndoState(){
+
     const undoData = {
         exp: exp,
         level: level,
+        poopCount: poopCount,
+        lastFeedTime: lastFeedTime,
+        nextPoopTime: nextPoopTime,
         history: JSON.parse(localStorage.getItem("history")) || [],
         achievements: JSON.parse(localStorage.getItem("achievements")) || []
     };
 
-    localStorage.setItem("undoData", JSON.stringify(undoData));
+    localStorage.setItem(
+        "undoData",
+        JSON.stringify(undoData)
+    );
+
 }
 
 function undoLast(){
@@ -597,19 +605,24 @@ function undoLast(){
 
     exp = undoData.exp;
     level = undoData.level;
+    poopCount = undoData.poopCount || 0;
+    lastFeedTime = undoData.lastFeedTime || 0;
+    nextPoopTime = undoData.nextPoopTime || 0;
 
     localStorage.setItem("exp", exp);
     localStorage.setItem("level", level);
-    localStorage.setItem("history", JSON.stringify(undoData.history));
-    localStorage.setItem("achievements", JSON.stringify(undoData.achievements));
+    localStorage.setItem("poopCount", poopCount);
+    localStorage.setItem("lastFeedTime", lastFeedTime);
+    localStorage.setItem("nextPoopTime", nextPoopTime);
+    localStorage.setItem("achievements", JSON.stringify(undoData.achievements || []));
 
     saveGame();
 
     localStorage.removeItem("undoData");
 
-    document.getElementById("log").textContent = "1つ前に戻したよ！";
+    document.getElementById("log").textContent =
+    "1つ前に戻したよ！";
 
-    showHistory();
     showAchievements();
     updateScreen();
 }
@@ -972,9 +985,13 @@ function checkPoopTimer(){
 }
 
 function exportBackup(){
+
     const backupData = {
         exp: exp,
         level: level,
+        poopCount: poopCount,
+        lastFeedTime: lastFeedTime,
+        nextPoopTime: nextPoopTime,
         history: JSON.parse(localStorage.getItem("history")) || [],
         achievements: JSON.parse(localStorage.getItem("achievements")) || []
     };
@@ -1062,9 +1079,8 @@ window.cleanPoop = cleanPoop;
 
 updateScreen();
 showHistory();
-checkAchievements();
 showAchievements();
-loadGame();
+
 startHistoryListener();
 startGameListener();
 
