@@ -521,7 +521,6 @@ const docRef = doc(db,"games",GAME_DOC);
         localStorage.setItem("poopCount", poopCount);
         localStorage.setItem("lastFeedTime", lastFeedTime);
         localStorage.setItem("nextPoopTime", nextPoopTime);
-        localStorage.setItem("history", JSON.stringify(data.history || []));
         localStorage.setItem("achievements", JSON.stringify(data.achievements || []));
 
         updateScreen();
@@ -541,7 +540,6 @@ await setDoc(
             poopCount: poopCount,
             lastFeedTime: lastFeedTime,
             nextPoopTime: nextPoopTime,
-            history: JSON.parse(localStorage.getItem("history")) || [],
             achievements: JSON.parse(localStorage.getItem("achievements")) || []
         },
         { merge:true }
