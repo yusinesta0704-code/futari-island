@@ -1,4 +1,4 @@
-﻿﻿﻿<!DOCTYPE html>
+﻿﻿﻿﻿<!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
@@ -472,10 +472,15 @@ button{
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
 
 import {
-    getFirestore,
-    doc,
-    getDoc,
-    setDoc
+getFirestore,
+doc,
+getDoc,
+setDoc,
+collection,
+addDoc,
+query,
+orderBy,
+onSnapshot
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -490,6 +495,8 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+const GAME_DOC = "beta";
+
 let exp = Number(localStorage.getItem("exp")) || 0;
 let poopCount = 0;
 let lastFeedTime = Number(localStorage.getItem("lastFeedTime")) || 0;
@@ -497,7 +504,7 @@ let nextPoopTime = Number(localStorage.getItem("nextPoopTime")) || 0;
 let level = Number(localStorage.getItem("level")) || 1;
 
 async function loadGame(){
-    const docRef = doc(db,"games","main");
+const docRef = doc(db,"games",GAME_DOC);
     const docSnap = await getDoc(docRef);
 
     if(docSnap.exists()){
@@ -526,8 +533,8 @@ async function loadGame(){
 }
 
 async function saveGame(){
-    await setDoc(
-        doc(db,"games","main"),
+await setDoc(
+    doc(db,"games",GAME_DOC),
         {
             exp: exp,
             level: level,
@@ -670,25 +677,24 @@ function playLevelUpEffect(afterFlash){
     }, 500);
 }
 
-function addHistory(message){
-    let history = JSON.parse(localStorage.getItem("history")) || [];
+async function addHistory(message){
 
     const today = new Date();
+
     const dateText =
         today.getFullYear() + "/" +
         (today.getMonth() + 1) + "/" +
         today.getDate();
 
-    history.unshift({
-        date: dateText,
-        text: message
-    });
+    await addDoc(
+        collection(db, "games", GAME_DOC, "history"),
+        {
+            date: dateText,
+            text: message,
+            createdAt: Date.now()
+        }
+    );
 
-    localStorage.setItem("history", JSON.stringify(history));
-
-    saveGame();
-
-    showHistory();
 }
 
 function showHistory(){
@@ -708,6 +714,34 @@ function showHistory(){
         div.textContent = item.date + "　" + item.text;
         historyList.appendChild(div);
     });
+}
+
+function startHistoryListener(){
+
+    const q =
+    query(
+        collection(db, "games", GAME_DOC, "history"),
+        orderBy("createdAt", "desc")
+    );
+
+    onSnapshot(q, function(snapshot){
+
+        const history = [];
+
+        snapshot.forEach(function(docSnap){
+            history.push(docSnap.data());
+        });
+
+        localStorage.setItem(
+            "history",
+            JSON.stringify(history)
+        );
+
+        showHistory();
+        checkAchievements();
+
+    });
+
 }
 
 function checkAchievements(){
@@ -1000,6 +1034,7 @@ showHistory();
 checkAchievements();
 showAchievements();
 loadGame();
+startHistoryListener();
 
 </script>
 
