@@ -445,6 +445,11 @@ button{
     <span>復元</span>
 </button>
 
+<button class="reset-button" onclick="migrateHistoryOnce()">
+    <span class="btn-tag">MIGRATE</span>
+    <span>履歴移行</span>
+</button>
+
 </div>
 
 <div class="history">
@@ -480,7 +485,8 @@ collection,
 addDoc,
 query,
 orderBy,
-onSnapshot
+    onSnapshot,
+    getDocs
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -495,7 +501,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const GAME_DOC = "beta";
+const GAME_DOC = "main";
 
 let exp = Number(localStorage.getItem("exp")) || 0;
 let poopCount = 0;
@@ -753,6 +759,53 @@ function startHistoryListener(){
 
     });
 
+}
+
+async function migrateHistoryOnce(){
+
+    if(!confirm("mainの古い履歴を新しい履歴コレクションへ移行しますか？")){
+        return;
+    }
+
+    const mainRef = doc(db, "games", "main");
+    const mainSnap = await getDoc(mainRef);
+
+    if(!mainSnap.exists()){
+        alert("mainデータが見つかりません");
+        return;
+    }
+
+    const data = mainSnap.data();
+    const oldHistory = data.history || [];
+
+    if(oldHistory.length === 0){
+        alert("移行する履歴がありません");
+        return;
+    }
+
+    const historyCol = collection(db, "games", "main", "history");
+    const existingSnap = await getDocs(historyCol);
+
+    if(!existingSnap.empty){
+        alert("すでにhistoryコレクションにデータがあります。重複防止のため中止しました。");
+        return;
+    }
+
+    const orderedHistory = [...oldHistory].reverse();
+
+    for(let i = 0; i < orderedHistory.length; i++){
+
+        const item = orderedHistory[i];
+
+        await addDoc(historyCol, {
+            date: item.date || "",
+            text: item.text || "",
+            createdAt: Date.now() + i
+        });
+
+    }
+
+    alert("履歴の移行が完了しました！");
 }
 
 function startGameListener(){
@@ -1074,6 +1127,7 @@ window.undoLast = undoLast;
 window.exportBackup = exportBackup;
 window.importBackup = importBackup;
 window.resetData = resetData;
+window.migrateHistoryOnce = migrateHistoryOnce;
 window.feedSlime = feedSlime;
 window.cleanPoop = cleanPoop;
 
