@@ -742,6 +742,37 @@ function startHistoryListener(){
 
 }
 
+function startGameListener(){
+
+    const docRef =
+    doc(db, "games", GAME_DOC);
+
+    onSnapshot(docRef, function(docSnap){
+
+        if(!docSnap.exists()){
+            return;
+        }
+
+        const data = docSnap.data();
+
+        exp = data.exp || 0;
+        level = data.level || 1;
+        poopCount = data.poopCount || 0;
+        lastFeedTime = data.lastFeedTime || 0;
+        nextPoopTime = data.nextPoopTime || 0;
+
+        localStorage.setItem("exp", exp);
+        localStorage.setItem("level", level);
+        localStorage.setItem("poopCount", poopCount);
+        localStorage.setItem("lastFeedTime", lastFeedTime);
+        localStorage.setItem("nextPoopTime", nextPoopTime);
+
+        updateScreen();
+
+    });
+
+}
+
 function checkAchievements(){
     const history = JSON.parse(localStorage.getItem("history")) || [];
     let achievements = JSON.parse(localStorage.getItem("achievements")) || [];
@@ -1035,6 +1066,7 @@ checkAchievements();
 showAchievements();
 loadGame();
 startHistoryListener();
+startGameListener();
 
 </script>
 
