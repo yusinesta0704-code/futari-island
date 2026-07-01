@@ -450,6 +450,17 @@ button{
   margin-top: 10px;
 }
 
+.mail-item {
+  background: #fff8ee;
+  border: 2px solid #e1c3a2;
+  border-radius: 12px;
+  padding: 10px;
+  margin-bottom: 8px;
+  text-align: left;
+  color: #6b4328;
+  white-space: pre-wrap;
+}
+
 </style>
 </head>
 
@@ -1261,6 +1272,32 @@ if (inboxTabBtn && writeTabBtn) {
   });
 }
 
+const sendMailBtn = document.getElementById("sendMailBtn");
+
+if (sendMailBtn) {
+  sendMailBtn.addEventListener("click", function () {
+    const mailText = document.getElementById("mailText");
+    const mailList = document.getElementById("mailList");
+
+    const text = mailText.value.trim();
+
+    if (text === "") {
+      alert("手紙を書いてから送信してね");
+      return;
+    }
+
+    mailList.innerHTML = "";
+
+    const mailItem = document.createElement("div");
+    mailItem.className = "mail-item";
+    mailItem.textContent = text;
+
+    mailList.prepend(mailItem);
+
+    mailText.value = "";
+  });
+}
+
 </script>
 
 <div id="mailboxModal" class="modal-bg" style="display:none;">
@@ -1278,8 +1315,10 @@ if (inboxTabBtn && writeTabBtn) {
     </div>
 
     <div id="inboxTab" class="mailbox-section mailbox-tab-content">
-      <p class="empty-mail">まだ手紙はありません</p>
-    </div>
+  <div id="mailList">
+    <p class="empty-mail">まだ手紙はありません</p>
+  </div>
+</div>
 
     <div id="writeTab" class="mailbox-section mailbox-tab-content" style="display:none;">
       <textarea
