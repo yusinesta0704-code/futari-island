@@ -1240,6 +1240,27 @@ function showMailboxTab(tabName) {
   }
 }
 
+function showMailboxTab(tabName) {
+  const inboxTab = document.getElementById("inboxTab");
+  const writeTab = document.getElementById("writeTab");
+  const inboxTabBtn = document.getElementById("inboxTabBtn");
+  const writeTabBtn = document.getElementById("writeTabBtn");
+
+  if (tabName === "inbox") {
+    inboxTab.style.display = "block";
+    writeTab.style.display = "none";
+    inboxTabBtn.classList.add("active");
+    writeTabBtn.classList.remove("active");
+  }
+
+  if (tabName === "write") {
+    inboxTab.style.display = "none";
+    writeTab.style.display = "block";
+    inboxTabBtn.classList.remove("active");
+    writeTabBtn.classList.add("active");
+  }
+}
+
 </script>
 
 <div id="mailboxModal" class="modal-bg" style="display:none;">
