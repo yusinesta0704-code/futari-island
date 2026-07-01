@@ -473,6 +473,29 @@ button{
   margin: 0;
   line-height: 1.4;
 }
+
+#postBoxImg.has-new-mail {
+  animation: postGlow 1.2s infinite;
+  filter: drop-shadow(0 0 8px #ffd966);
+}
+
+@keyframes postGlow {
+  0% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 4px #ffd966);
+  }
+
+  50% {
+    transform: scale(1.06);
+    filter: drop-shadow(0 0 14px #fff2a8);
+  }
+
+  100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 4px #ffd966);
+  }
+}
+
 </style>
 </head>
 
@@ -1347,6 +1370,12 @@ mailItem.querySelector(".mail-text").textContent = data.text || "";
     mailList.appendChild(mailItem);
   });
 });
+
+const postBoxImg = document.getElementById("postBoxImg");
+
+if (postBoxImg) {
+  postBoxImg.classList.add("has-new-mail");
+} 
 
 </script>
 
