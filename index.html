@@ -1340,54 +1340,60 @@ const lettersQuery = query(lettersRef, orderBy("createdAt", "desc"));
 
 onSnapshot(lettersQuery, function(snapshot) {
   const mailList = document.getElementById("mailList");
+  const postBoxImg = document.getElementById("postBoxImg");
 
   if (!mailList) return;
 
   mailList.innerHTML = "";
 
-const postBoxImg = document.getElementById("postBoxImg");
-let hasUnread = false;
+  let hasUnread = false;
 
   if (snapshot.empty) {
     mailList.innerHTML = '<p class="empty-mail">まだ手紙はありません</p>';
+
+    if (postBoxImg) {
+      postBoxImg.classList.remove("has-new-mail");
+    }
+
     return;
   }
 
   snapshot.forEach(function(docSnap) {
     const data = docSnap.data();
 
-if (data.read === false) {
-  hasUnread = true;
-}
+    if (data.read === false || data.read === "false") {
+      hasUnread = true;
+    }
 
     const mailItem = document.createElement("div");
     mailItem.className = "mail-item";
+
     const dateText = data.createdAt
-  ? data.createdAt.toDate().toLocaleString("ja-JP", {
-      month: "numeric",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit"
-    })
-  : "送信中";
+      ? data.createdAt.toDate().toLocaleString("ja-JP", {
+          month: "numeric",
+          day: "numeric",
+          hour: "2-digit",
+          minute: "2-digit"
+        })
+      : "送信中";
 
-mailItem.innerHTML =
-  '<div class="mail-date">' + dateText + '</div>' +
-  '<div class="mail-text"></div>';
+    mailItem.innerHTML =
+      '<div class="mail-date">' + dateText + '</div>' +
+      '<div class="mail-text"></div>';
 
-mailItem.querySelector(".mail-text").textContent = data.text || "";
+    mailItem.querySelector(".mail-text").textContent = data.text || "";
 
     mailList.appendChild(mailItem);
   });
-});
 
-if (postBoxImg) {
-  if (hasUnread) {
-    postBoxImg.classList.add("has-new-mail");
-  } else {
-    postBoxImg.classList.remove("has-new-mail");
+  if (postBoxImg) {
+    if (hasUnread) {
+      postBoxImg.classList.add("has-new-mail");
+    } else {
+      postBoxImg.classList.remove("has-new-mail");
+    }
   }
-}
+});
 
 
 </script>
