@@ -371,6 +371,48 @@ button{
   cursor: pointer;
 }
 
+.modal-bg {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.mailbox-modal {
+  width: 90%;
+  max-width: 360px;
+  background: #fff8ee;
+  border: 4px solid #c9824a;
+  border-radius: 18px;
+  padding: 18px;
+  text-align: center;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+}
+
+.mailbox-section {
+  background: white;
+  border-radius: 14px;
+  padding: 12px;
+  margin: 12px 0;
+}
+
+.empty-mail {
+  color: #8a6a55;
+}
+
+.mailbox-modal button {
+  background: #d66b4a;
+  color: white;
+  border: none;
+  border-radius: 999px;
+  padding: 10px 24px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
 </style>
 </head>
 
@@ -1108,10 +1150,12 @@ function resetData(){
     updateScreen();
 }
 
-function openMailbox(){
+function openMailbox() {
+  document.getElementById("mailboxModal").style.display = "flex";
+}
 
-    alert("📮 ポストを開く\n\n（Ver1.3で実装予定）");
-
+function closeMailbox() {
+  document.getElementById("mailboxModal").style.display = "none";
 }
 
 window.addExp = addExp;
@@ -1132,6 +1176,19 @@ startHistoryListener();
 startGameListener();
 
 </script>
+
+<div id="mailboxModal" class="modal-bg" style="display:none;">
+  <div class="mailbox-modal">
+    <h2>📮 ポスト</h2>
+
+    <div class="mailbox-section">
+      <h3>受信箱</h3>
+      <p class="empty-mail">まだ手紙はありません</p>
+    </div>
+
+    <button onclick="closeMailbox()">閉じる</button>
+  </div>
+</div>
 
 </body>
 </html>
