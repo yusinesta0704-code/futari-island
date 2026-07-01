@@ -464,26 +464,15 @@ button{
 .mail-date {
   font-size: 12px;
   color: #9b7357;
-  margin-bottom: 6px;
-}
-
-.mail-text {
-  font-size: 15px;
-  line-height: 1.6;
-}
-
-.mail-date {
-  font-size: 12px;
-  color: #9b7357;
   margin: 0 0 4px 0;
   line-height: 1.2;
 }
 
 .mail-text {
+  font-size: 15px;
   margin: 0;
   line-height: 1.4;
 }
-
 </style>
 </head>
 
@@ -1349,10 +1338,9 @@ onSnapshot(lettersQuery, function(snapshot) {
     })
   : "送信中";
 
-mailItem.innerHTML = `
-  <div class="mail-date">${dateText}</div>
-  <div class="mail-text"></div>
-`;
+mailItem.innerHTML =
+  '<div class="mail-date">' + dateText + '</div>' +
+  '<div class="mail-text"></div>';
 
 mailItem.querySelector(".mail-text").textContent = data.text || "";
 
