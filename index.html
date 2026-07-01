@@ -1277,10 +1277,8 @@ if (inboxTabBtn && writeTabBtn) {
 const sendMailBtn = document.getElementById("sendMailBtn");
 
 if (sendMailBtn) {
-  sendMailBtn.addEventListener("click", function () {
+  sendMailBtn.addEventListener("click", async function () {
     const mailText = document.getElementById("mailText");
-    const mailList = document.getElementById("mailList");
-
     const text = mailText.value.trim();
 
     if (text === "") {
@@ -1288,15 +1286,14 @@ if (sendMailBtn) {
       return;
     }
 
-    mailList.innerHTML = "";
-
-    const mailItem = document.createElement("div");
-    mailItem.className = "mail-item";
-    mailItem.textContent = text;
-
-    mailList.prepend(mailItem);
+    await addDoc(collection(db, "games", "main", "letters"), {
+      text: text,
+      createdAt: serverTimestamp(),
+      read: false
+    });
 
     mailText.value = "";
+    alert("手紙を送りました📮");
   });
 }
 
