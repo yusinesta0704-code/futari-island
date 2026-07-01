@@ -1175,6 +1175,10 @@ showAchievements();
 startHistoryListener();
 startGameListener();
 
+document.getElementById("closeMailboxBtn").addEventListener("click", function() {
+  document.getElementById("mailboxModal").style.display = "none";
+});
+
 </script>
 
 <div id="mailboxModal" class="modal-bg" style="display:none;">
@@ -1186,7 +1190,7 @@ startGameListener();
       <p class="empty-mail">まだ手紙はありません</p>
     </div>
 
-    <button onclick="closeMailbox()">閉じる</button>
+    <button id="closeMailboxBtn">閉じる</button>
   </div>
 </div>
 
