@@ -1345,6 +1345,9 @@ onSnapshot(lettersQuery, function(snapshot) {
 
   mailList.innerHTML = "";
 
+const postBoxImg = document.getElementById("postBoxImg");
+let hasUnread = false;
+
   if (snapshot.empty) {
     mailList.innerHTML = '<p class="empty-mail">まだ手紙はありません</p>';
     return;
@@ -1352,6 +1355,10 @@ onSnapshot(lettersQuery, function(snapshot) {
 
   snapshot.forEach(function(docSnap) {
     const data = docSnap.data();
+
+if (data.read === false) {
+  hasUnread = true;
+}
 
     const mailItem = document.createElement("div");
     mailItem.className = "mail-item";
@@ -1374,11 +1381,14 @@ mailItem.querySelector(".mail-text").textContent = data.text || "";
   });
 });
 
-const postBoxImg = document.getElementById("postBoxImg");
-
 if (postBoxImg) {
-  postBoxImg.classList.add("has-new-mail");
-} 
+  if (hasUnread) {
+    postBoxImg.classList.add("has-new-mail");
+  } else {
+    postBoxImg.classList.remove("has-new-mail");
+  }
+}
+
 
 </script>
 
