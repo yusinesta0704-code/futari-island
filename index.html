@@ -1297,6 +1297,32 @@ if (sendMailBtn) {
   });
 }
 
+const lettersRef = collection(db, "games", "main", "letters");
+const lettersQuery = query(lettersRef, orderBy("createdAt", "desc"));
+
+onSnapshot(lettersQuery, function(snapshot) {
+  const mailList = document.getElementById("mailList");
+
+  if (!mailList) return;
+
+  mailList.innerHTML = "";
+
+  if (snapshot.empty) {
+    mailList.innerHTML = '<p class="empty-mail">まだ手紙はありません</p>';
+    return;
+  }
+
+  snapshot.forEach(function(docSnap) {
+    const data = docSnap.data();
+
+    const mailItem = document.createElement("div");
+    mailItem.className = "mail-item";
+    mailItem.textContent = data.text || "";
+
+    mailList.appendChild(mailItem);
+  });
+});
+
 </script>
 
 <div id="mailboxModal" class="modal-bg" style="display:none;">
