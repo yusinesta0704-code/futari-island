@@ -413,6 +413,43 @@ button{
   cursor: pointer;
 }
 
+.mailbox-tabs {
+  display: flex;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.mailbox-tab {
+  flex: 1;
+  background: #f3d2b5;
+  color: #7a4326;
+  border: 2px solid #c9824a;
+  border-radius: 999px;
+  padding: 8px 6px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.mailbox-tab.active {
+  background: #d66b4a;
+  color: white;
+}
+
+#mailText {
+  width: 100%;
+  height: 120px;
+  resize: none;
+  border-radius: 12px;
+  border: 2px solid #d9c2a5;
+  padding: 10px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+#sendMailBtn {
+  margin-top: 10px;
+}
+
 </style>
 </head>
 
@@ -1179,15 +1216,57 @@ document.getElementById("closeMailboxBtn").addEventListener("click", function() 
   document.getElementById("mailboxModal").style.display = "none";
 });
 
+function showMailboxTab(tabName) {
+  const inboxTab = document.getElementById("inboxTab");
+  const writeTab = document.getElementById("writeTab");
+
+  const inboxTabBtn = document.getElementById("inboxTabBtn");
+  const writeTabBtn = document.getElementById("writeTabBtn");
+
+  if (tabName === "inbox") {
+    inboxTab.style.display = "block";
+    writeTab.style.display = "none";
+
+    inboxTabBtn.classList.add("active");
+    writeTabBtn.classList.remove("active");
+  }
+
+  if (tabName === "write") {
+    inboxTab.style.display = "none";
+    writeTab.style.display = "block";
+
+    inboxTabBtn.classList.remove("active");
+    writeTabBtn.classList.add("active");
+  }
+}
+
 </script>
 
 <div id="mailboxModal" class="modal-bg" style="display:none;">
   <div class="mailbox-modal">
     <h2>📮 ポスト</h2>
 
-    <div class="mailbox-section">
-      <h3>受信箱</h3>
+    <div class="mailbox-tabs">
+      <button id="inboxTabBtn" class="mailbox-tab active" onclick="showMailboxTab('inbox')">
+        📥 受信箱
+      </button>
+
+      <button id="writeTabBtn" class="mailbox-tab" onclick="showMailboxTab('write')">
+        ✉ 手紙を書く
+      </button>
+    </div>
+
+    <div id="inboxTab" class="mailbox-section mailbox-tab-content">
       <p class="empty-mail">まだ手紙はありません</p>
+    </div>
+
+    <div id="writeTab" class="mailbox-section mailbox-tab-content" style="display:none;">
+      <textarea
+        id="mailText"
+        placeholder="メッセージを書いてね♡"
+        maxlength="300"></textarea>
+
+      <button id="sendMailBtn">送信</button>
     </div>
 
     <button id="closeMailboxBtn">閉じる</button>
