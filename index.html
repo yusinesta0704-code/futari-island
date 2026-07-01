@@ -609,10 +609,8 @@ collection,
 addDoc,
 query,
 orderBy,
- onSnapshot,
-  collection,
-  addDoc,
-  serverTimestamp
+ onSnapshot
+
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -1278,8 +1276,10 @@ if (inboxTabBtn && writeTabBtn) {
 const sendMailBtn = document.getElementById("sendMailBtn");
 
 if (sendMailBtn) {
-  sendMailBtn.addEventListener("click", async function () {
+  sendMailBtn.addEventListener("click", function () {
     const mailText = document.getElementById("mailText");
+    const mailList = document.getElementById("mailList");
+
     const text = mailText.value.trim();
 
     if (text === "") {
@@ -1287,14 +1287,15 @@ if (sendMailBtn) {
       return;
     }
 
-    await addDoc(collection(db, "letters"), {
-      text: text,
-      createdAt: serverTimestamp(),
-      read: false
-    });
+    mailList.innerHTML = "";
+
+    const mailItem = document.createElement("div");
+    mailItem.className = "mail-item";
+    mailItem.textContent = text;
+
+    mailList.prepend(mailItem);
 
     mailText.value = "";
-    alert("手紙を送りました📮");
   });
 }
 
