@@ -642,7 +642,9 @@ import {
 getFirestore,
 doc,
 getDoc,
+  getDocs,
 setDoc,
+  updateDoc,
 collection,
 addDoc,
 query,
@@ -1395,6 +1397,23 @@ onSnapshot(lettersQuery, function(snapshot) {
   }
 });
 
+async function readAllLetters() {
+
+  const q = query(
+    collection(db, "games", "main", "letters")
+  );
+
+  const snapshot = await getDocs(q);
+
+  for (const letter of snapshot.docs) {
+
+    await updateDoc(letter.ref, {
+      read: true
+    });
+
+  }
+
+}
 
 </script>
 
